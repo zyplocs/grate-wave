@@ -9,24 +9,32 @@
 using namespace metal;
 
 struct VertexOut {
-    float4 position [[position]];
-    float2 uv;
+    float4 position [[position]]; // clip space -> [x, y, z, w]
+    float2 uv;  // texture coordinates
 };
 
 struct GratingUniforms {
-    float2 resolution;   // in pixels
-    float  frequency;    // cycles per pixel
-    float  orientation;  // radians
-    float  phase;        // radians
-    float  mean;         // 0..1
-    float  contrast;     // 0..1 (Michelson-ish, assuming mean=0.5
-    float2 _pad;
+    float2 resolution;   // screen (view) size -> pixels
+    float  frequency;    // spatial freq. -> cycles per pixel
+    float  orientation;  // grating angle -> radians
+    float  phase;        // shifts the wave left/right -> radians
+    float  mean;         // average luminance -> 0..1
+    float  contrast;     // Michelson contrast -> 0..1
+    float2 _pad;         // GPU padding bytes; leave here
 };
 
 vertex VertexOut vertex_main(uint vid [[vertex_id]]) {
     // Fullscreen triangle
-    float2 pos[3] = { float2(-1.0, -1.0), float2( 3.0, -1.0), float2(-1.0, 3.0) };
-    float2 uv[3] = { float2(0.0, 0.0), float2(2.0, 0.0), float2(0.0, 2.0) };
+    float2 pos[3] = {
+        float2(-1.0, -1.0),
+        float2( 3.0, -1.0),
+        float2(-1.0, 3.0)
+    };  // norm. device coords : (-1,-1) is bottom-left & (1,1) is top-right
+    float2 uv[3] = {
+        float2(0.0, 0.0),
+        float2(2.0, 0.0),
+        float2(0.0, 2.0)
+    };  // texture coords : (0,0) is bottom-left & (1,1) is top-right
     
     VertexOut out;
     out.position = float4(pos[vid], 0.0, 1.0);
