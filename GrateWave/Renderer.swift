@@ -30,7 +30,7 @@ final class Renderer: NSObject, MTKViewDelegate {
     var contrast: Float = 1
     var mean: Float = 0.5
     var driftEnabled: Bool = false
-    var phaseVelocity: Float = 0       // radians/sec
+    var phaseVelocity: Float = 0
 
     private var phase: Float = 0
     private var lastTime: CFTimeInterval?
