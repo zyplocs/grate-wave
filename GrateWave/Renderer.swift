@@ -36,21 +36,21 @@ final class Renderer: NSObject, MTKViewDelegate {
     private var lastTime: CFTimeInterval?
     
     init?(mtkView: MTKView) {
-        guard let device = mtkView.device else { return nil }
+        guard let device: any MTLDevice = mtkView.device else { return nil }
         self.device = device
         
-        guard let cq = device.makeCommandQueue() else { return nil }
+        guard let cq: any MTLCommandQueue = device.makeCommandQueue() else { return nil }
         self.commandQueue = cq
         
-        let uniformsSize = MemoryLayout<GratingUniforms>.stride
-        guard let ub = device.makeBuffer(length: uniformsSize, options: [.storageModeShared]) else { return nil }
+        let uniformsSize: Int = MemoryLayout<GratingUniforms>.stride
+        guard let ub: any MTLBuffer = device.makeBuffer(length: uniformsSize, options: [.storageModeShared]) else { return nil }
         self.uniformBuffer = ub
         
-        guard let library = device.makeDefaultLibrary() else { return nil }
-        let vFunc = library.makeFunction(name: "vertex_main")
-        let fFunc = library.makeFunction(name: "fragment_grating")
+        guard let library: any MTLLibrary = device.makeDefaultLibrary() else { return nil }
+        let vFunc: (any MTLFunction)? = library.makeFunction(name: "vertex_main")
+        let fFunc: (any MTLFunction)? = library.makeFunction(name: "fragment_grating")
         
-        let desc = MTLRenderPipelineDescriptor()
+        let desc: MTLRenderPipelineDescriptor = MTLRenderPipelineDescriptor()
         desc.vertexFunction = vFunc
         desc.fragmentFunction = fFunc
         desc.colorAttachments[0].pixelFormat = mtkView.colorPixelFormat
@@ -68,14 +68,14 @@ final class Renderer: NSObject, MTKViewDelegate {
     
     func draw(in view: MTKView) {
         guard
-            let drawable = view.currentDrawable,
-            let rpd = view.currentRenderPassDescriptor
+            let drawable: any CAMetalDrawable = view.currentDrawable,
+            let rpd: MTLRenderPassDescriptor = view.currentRenderPassDescriptor
         else { return }
         
         // Time step
-        let now = CACurrentMediaTime()
+        let now: CFTimeInterval = CACurrentMediaTime()
         let dt: Float
-        if let last = lastTime {
+        if let last: CFTimeInterval = lastTime {
             dt = Float(now - last)
         } else {
             dt = 0
@@ -89,7 +89,7 @@ final class Renderer: NSObject, MTKViewDelegate {
         }
         
         // Fill uniforms
-        var u = GratingUniforms()
+        var u: GratingUniforms = GratingUniforms()
         u.resolution = SIMD2(Float(view.drawableSize.width), Float(view.drawableSize.height))
         u.frequency = frequency
         u.orientation = orientationRadians
@@ -99,8 +99,8 @@ final class Renderer: NSObject, MTKViewDelegate {
         
         memcpy(uniformBuffer.contents(), &u, MemoryLayout<GratingUniforms>.stride)
         
-        guard let cmd = commandQueue.makeCommandBuffer(),
-              let enc = cmd.makeRenderCommandEncoder(descriptor: rpd)
+        guard let cmd: any MTLCommandBuffer = commandQueue.makeCommandBuffer(),
+              let enc: any MTLRenderCommandEncoder = cmd.makeRenderCommandEncoder(descriptor: rpd)
         else { return }
         
         enc.setRenderPipelineState(pipeline)

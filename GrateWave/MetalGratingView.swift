@@ -26,7 +26,7 @@ struct MetalGratingView: UIViewRepresentable {
     }
     
     func makeUIView(context: Context) -> MTKView {
-        let view = MTKView()
+        let view: MTKView = MTKView()
         view.device = MTLCreateSystemDefaultDevice()
         view.colorPixelFormat = .bgra8Unorm
         view.isPaused = false
