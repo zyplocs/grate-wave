@@ -33,16 +33,14 @@ struct ContentView: View {
                 }
                 HStack {
                     Text("Mean: \(p.mean, specifier: "%.2f")")
-                        .fontDesign(.serif)
                     Slider(value: $p.mean, in: 0...1)
                 }
                 
                 Toggle("Drift", isOn: $p.driftEnabled)
-                    .fontDesign(.serif)
                 
                 HStack {
                     Text("Phase velocity (rad/s): \(p.phaseVelocity, specifier: "%.2f")")
-                        .fontDesign(.serif)
+                        .fontDesign(.rounded)
                     Slider(value: $p.phaseVelocity, in: 0...20)
                 }
             }
