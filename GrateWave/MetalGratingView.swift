@@ -10,12 +10,12 @@ import MetalKit
 internal import Combine
 
 final class GratingParams: ObservableObject {
-    @Published var frequency: Float = 0.01
-    @Published var orientationDeg: Float = 0
-    @Published var contrast: Float = 1.0
-    @Published var mean: Float = 0.5
+    @Published var frequency: Double = 0.01
+    @Published var orientationDeg: Double = 0
+    @Published var contrast: Double = 1.0
+    @Published var mean: Double = 0.5
     @Published var driftEnabled: Bool = false
-    @Published var phaseVelocity: Float = 0.0
+    @Published var phaseVelocity: Double = 0.0
 }
 
 struct MetalGratingView: UIViewRepresentable {
@@ -44,12 +44,12 @@ struct MetalGratingView: UIViewRepresentable {
     
     func updateUIView(_ uiView: MTKView, context: Context) {
         guard let r = context.coordinator.renderer else { return }
-        r.frequency = params.frequency
-        r.orientationRadians = params.orientationDeg * (.pi / 180)
-        r.contrast = params.contrast
-        r.mean = params.mean
+        r.frequency = Float(params.frequency)
+        r.orientationRadians = Float(params.orientationDeg * (.pi / 180))
+        r.contrast = Float(params.contrast)
+        r.mean = Float(params.mean)
         r.driftEnabled = params.driftEnabled
-        r.phaseVelocity = params.phaseVelocity
+        r.phaseVelocity = Float(params.phaseVelocity)
     }
     
     final class Coordinator {
